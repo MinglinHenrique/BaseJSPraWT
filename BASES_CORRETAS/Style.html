@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Inscrição Evento</title>
+
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: rgb(255, 255, 255);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 18px;
+      background: rgb(0, 0, 255);
+      color: rgb(255, 255, 255);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      width: 320px;
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin: 5px 0 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .close-btn {
+      background: rgb(0, 0, 255);
+      color: white;
+    }
+
+    label {
+  display: inline-flex;
+  gap: 6px;
+    }
+
+    label p {
+  margin: 0;
+  display: inline;
+    }
+
+    #coffee {
+        font-size: 15px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<button onclick="abrirModal()">Inscreva-se</button>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h2>Inscrição</h2>
+
+    <form id="form">
+      <input type="text" name="nome" placeholder="Nome Completo" required>
+
+      <input type="text" name="ra" placeholder="RA" required>
+
+      <input type="text" name="curso" placeholder="Curso" required>
+
+      <input type="text" name="serie" placeholder="Série" required>
+
+      <input type="text" name="email" placeholder="Email" required>
+
+      <label>
+    <input type="checkbox" name="coffee">
+    <p id="coffee" class="texto">Participar do Coffee Break</p>
+    </label>
+
+      <div class="actions">
+        <button type="submit">Enviar</button>
+        <button type="button" class="close-btn" onclick="fecharModal()">Cancelar</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('modal');
+
+  function abrirModal() {
+    modal.style.display = 'flex';
+  }
+
+  function fecharModal() {
+    modal.style.display = 'none';
+  }
+
+  // Simulação de envio
+  document.getElementById('form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const dados = Object.fromEntries(formData);
+
+    console.log("Dados enviados:", dados);
+
+    alert("Inscrição realizada com sucesso!");
+
+    fecharModal();
+    this.reset();
+  });
+
+  // Fechar clicando fora
+  window.onclick = function(event) {
+    if (event.target === modal) {
+      fecharModal();
+    }
+  }
+</script>
+
+</body>
+</html>
