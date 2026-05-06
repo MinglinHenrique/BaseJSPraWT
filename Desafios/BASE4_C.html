@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrossel Interativo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f4f3ef;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .carousel-root {
+      width: 100%;
+      max-width: 860px;
+    }
+
+    .carousel-track-wrap {
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .carousel-card {
+      flex: 0 0 calc(33.333% - 10px);
+      margin-right: 15px;
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .carousel-card:last-child {
+      margin-right: 0;
+    }
+
+    .card-img {
+      width: 100%;
+      height: 148px;
+      object-fit: cover;
+      display: block;
+      background: #e8e7e3;
+    }
+
+    .card-body {
+      padding: 14px 16px 18px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .card-tag {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #185fa5;
+      background: #e6f1fb;
+      border-radius: 4px;
+      padding: 3px 8px;
+      width: fit-content;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.35;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .carousel-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;
+    }
+
+    .ctrl-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .ctrl-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.18s, opacity 0.18s, transform 0.1s;
+      color: #1a1a1a;
+    }
+
+    .ctrl-btn:not(:disabled):hover {
+      background: #f0efeb;
+    }
+
+    .ctrl-btn:not(:disabled):active {
+      transform: scale(0.94);
+    }
+
+    .ctrl-btn:disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .ctrl-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.2);
+      transition: background 0.2s, transform 0.2s;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+    }
+
+    .dot.active {
+      background: #1a1a1a;
+      transform: scale(1.3);
+    }
+
+    .counter {
+      font-size: 13px;
+      color: #888;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="carousel-root">
+    <div class="carousel-track-wrap">
+      <div class="carousel-track" id="track"></div>
+    </div>
+    <div class="carousel-controls">
+      <div class="ctrl-btns">
+        <button class="ctrl-btn" id="btn-prev" disabled>
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="ctrl-btn" id="btn-next">
+          <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+        </button>
+      </div>
+      <div class="dots" id="dots"></div>
+      <span class="counter" id="counter"></span>
+    </div>
+  </div>
+
+  <script>
+    const ITEMS = [
+      {
+        tag: "Astronomia",
+        title: "A Via Láctea",
+        desc: "Nossa galáxia espiral contém entre 100 e 400 bilhões de estrelas e um buraco negro supermassivo em seu centro.",
+        img: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=600&q=80"
+      },
+      {
+        tag: "Oceano",
+        title: "Abissal Profundo",
+        desc: "As fossas oceânicas chegam a 11 km de profundidade, abrigando formas de vida adaptadas à pressão extrema.",
+        img: "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=600&q=80"
+      },
+      {
+        tag: "Floresta",
+        title: "Amazônia Viva",
+        desc: "A maior floresta tropical do mundo possui mais de 390 bilhões de árvores e é chamada de pulmão da Terra.",
+        img: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&q=80"
+      },
+      {
+        tag: "Ciência",
+        title: "Física Quântica",
+        desc: "No mundo subatômico, partículas podem existir em múltiplos estados simultaneamente até serem observadas.",
+        img: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&q=80"
+      },
+      {
+        tag: "Arquitetura",
+        title: "Cidades do Futuro",
+        desc: "Projetos urbanos integram energia renovável, vegetação e transporte inteligente para reduzir emissões.",
+        img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=600&q=80"
+      },
+      {
+        tag: "Cultura",
+        title: "Arte Rupestre",
+        desc: "As pinturas em cavernas datam de 40 mil anos e revelam a capacidade simbólica dos primeiros humanos.",
+        img: "https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=600&q=80"
+      },
+      {
+        tag: "Tecnologia",
+        title: "Inteligência Artificial",
+        desc: "Modelos de linguagem modernos processam bilhões de parâmetros para gerar texto e raciocinar sobre tarefas complexas.",
+        img: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80"
+      },
+    ];
+
+    const VISIBLE = 3;
+    let idx = 0;
+    const maxIdx = ITEMS.length - VISIBLE;
+
+    const track = document.getElementById('track');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const dotsEl = document.getElementById('dots');
+    const counter = document.getElementById('counter');
+
+    /* Gera os cards dinamicamente */
+    ITEMS.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'carousel-card';
+      card.innerHTML = `
+        <img class="card-img" src="${item.img}" alt="${item.title}" loading="lazy" />
+        <div class="card-body">
+          <span class="card-tag">${item.tag}</span>
+          <p class="card-title">${item.title}</p>
+          <p class="card-desc">${item.desc}</p>
+        </div>`;
+      track.appendChild(card);
+    });
+
+    /* Gera os pontos de navegação */
+    const totalDots = ITEMS.length - VISIBLE + 1;
+    for (let i = 0; i < totalDots; i++) {
+      const d = document.createElement('button');
+      d.className = 'dot' + (i === 0 ? ' active' : '');
+      d.setAttribute('aria-label', `Ir para posição ${i + 1}`);
+      d.addEventListener('click', () => { idx = i; update(); });
+      dotsEl.appendChild(d);
+    }
+
+    function update() {
+      const cards = track.querySelectorAll('.carousel-card');
+      const cardWidth = cards[0].offsetWidth;
+      const gap = 15;
+      const offset = idx * (cardWidth + gap);
+
+      track.style.transform = `translateX(-${offset}px)`;
+      btnPrev.disabled = idx === 0;
+      btnNext.disabled = idx >= maxIdx;
+      counter.textContent = `${idx + 1} – ${Math.min(idx + VISIBLE, ITEMS.length)} de ${ITEMS.length}`;
+
+      document.querySelectorAll('.dot').forEach((d, i) => {
+        d.classList.toggle('active', i === idx);
+      });
+    }
+
+    btnPrev.addEventListener('click', () => { if (idx > 0) { idx--; update(); } });
+    btnNext.addEventListener('click', () => { if (idx < maxIdx) { idx++; update(); } });
+
+    update();
+  </script>
+
+</body>
+</html>

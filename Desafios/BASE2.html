@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Exemplo 2</title>
+
+<style>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .carousel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .viewport {
+    width: 630px; /* 3 cards visíveis */
+    overflow: hidden;
+  }
+
+  .track {
+    display: flex;
+    transition: transform 0.4s ease;
+  }
+
+  .card {
+    width: 200px;
+    height: 250px;
+    flex-shrink: 0;
+    margin-right: 10px;
+    background: #ddd;
+    border-radius: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial;
+  }
+
+  button {
+    padding: 10px;
+    cursor: pointer;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="carousel">
+
+  <button onclick="prev()">‹</button>
+
+  <div class="viewport">
+    <div class="track" id="track">
+
+      <div class="card">1</div>
+      <div class="card">2</div>
+      <div class="card">3</div>
+      <div class="card">4</div>
+      <div class="card">5</div>
+
+    </div>
+  </div>
+
+  <button onclick="next()">›</button>
+
+</div>
+
+<script>
+  const track = document.getElementById("track");
+
+  let index = 0;
+
+  const cardWidth = 210; // largura + margem
+  const visibleCards = 3;
+  const totalCards = document.querySelectorAll(".card").length;
+
+  const maxIndex = totalCards - visibleCards;
+
+  function update() {
+    track.style.transform = `translateX(-${index * cardWidth}px)`;
+  }
+
+  function next() {
+    if (index < maxIndex) {
+      index++;
+      update();
+    }
+  }
+
+  function prev() {
+    if (index > 0) {
+      index--;
+      update();
+    }
+  }
+
+  update();
+</script>
+
+</body>
+</html>
